@@ -1,0 +1,16 @@
+{
+  "name": "purescript-pux-echarts",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-pux": "^10.0.0",
+    "purescript-echarts": "^5.0.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^3.0.0"
+  }
+}
