@@ -35,7 +35,7 @@ import Text.Smolder.Markup ((!))
 
 import Prelude (($), (<<<), (*>), bind, discard)
 
-type EChartsEffects eff =
+type Effects eff =
   ( echarts ∷ ET.ECHARTS
   , dom ∷ DOM
   , avar ∷ AVAR
@@ -51,7 +51,7 @@ type State =
   , height ∷ Int
   }
 
-data EChartsEvent
+data Event
   = -- | Initialise the chart (perhaps with a theme)
     Init (Maybe ETheme.Theme)
     -- | Fires when the chart has initialised
@@ -64,7 +64,7 @@ data EChartsEvent
 
 -- | Creates a container which will subsequently be modified effectfully.
 view
-  ∷ State → HTML EChartsEvent
+  ∷ State → HTML Event
 view state =
   div
     ! id (unwrap state.chartId)
@@ -75,9 +75,9 @@ view state =
 
 foldp
   :: ∀ fx
-   . EChartsEvent
+   . Event
   -> State
-  -> EffModel State EChartsEvent (EChartsEffects fx)
+  -> EffModel State Event (Effects fx)
 foldp (Init theme) state =
   { state : state
   , effects :
