@@ -49,22 +49,27 @@ type State =
   , chart ∷ Maybe ET.Chart
   , width ∷ Int
   , height ∷ Int
+  , options :: EM.DSL ETP.OptionI
   }
 
 data Event
   = -- | Initialise the chart (perhaps with a theme)
-    Init (Maybe ETheme.Theme)
+    Render (Maybe ETheme.Theme)
     -- | Fires when the chart has initialised
   | Initialised ET.Chart
   | Dispose
-  | Set (EM.DSL ETP.OptionI)
-  | Reset (EM.DSL ETP.OptionI)
+    -- | Re-render the chart with updated options
+  | Refresh
   | Resize
   | Clear
+    -- | Only a teensy-weensy hack. We want to trigger events on the next
+    --   'tick', because we want them to happen after the view function
+    --   completes. So `Defer` just re-raises the wrapped event.
+  | Defer Event
 
 -- | Creates a container which will subsequently be modified effectfully.
 view
-  ∷ State → HTML Event
+  ∷ ∀e. State → HTML e
 view state =
   div
     ! id (unwrap state.chartId)
@@ -78,12 +83,13 @@ foldp
    . Event
   -> State
   -> EffModel State Event (Effects fx)
-foldp (Init theme) state =
+foldp (Render theme) state =
   { state : state
   , effects :
     [
       liftEff (getElementById state.chartId) >>= traverse \el -> do
         chart <- liftEff $ maybe EC.init EC.initWithTheme theme el
+        EC.setOption state.options chart
         pure $ Initialised chart
     ]
   }
@@ -94,16 +100,11 @@ foldp Dispose state =
       (for_ state.chart $ liftEff <<< EC.dispose) *> pure Nothing
     ]
   }
-foldp (Set opts) state =
+foldp Refresh state =
   { state : state
   , effects :  [
-      (for_ state.chart $ liftEff <<< EC.setOption opts) *> pure Nothing
-    ]
-  }
-foldp (Reset opts) state =
-  { state : state
-  , effects :  [
-      (for_ state.chart $ liftEff <<< EC.resetOption opts) *> pure Nothing
+      (for_ state.chart $ liftEff <<< EC.setOption state.options)
+      *> pure Nothing
     ]
   }
 foldp Resize state =
@@ -117,4 +118,8 @@ foldp Clear state =
   , effects :  [
       (for_ state.chart $ liftEff <<< EC.clear) *> pure Nothing
     ]
+  }
+foldp (Defer evt) state =
+  { state : state
+  , effects: [ pure $ Just evt ]
   }
