@@ -1,6 +1,10 @@
 {
   "name": "purescript-pux-echarts",
   "license": "Apache-2.0",
+  "repository": {
+      "type": "git",
+      "url": "git://github.com/tweag/purescript-pux-echarts.git"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
