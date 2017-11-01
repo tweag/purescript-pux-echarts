@@ -12,7 +12,6 @@ import CSS.Size (px)
 
 import Data.Int (toNumber)
 import Data.Maybe (Maybe(..), maybe)
-import Data.Monoid (mempty)
 import Data.Newtype (unwrap)
 import Data.Traversable (for_, traverse)
 import DOM (DOM)
@@ -31,7 +30,7 @@ import Pux.ECharts.Utils (getElementById)
 
 import Text.Smolder.HTML (div)
 import Text.Smolder.HTML.Attributes (id)
-import Text.Smolder.Markup ((!))
+import Text.Smolder.Markup ((!), empty)
 
 import Prelude (($), (<<<), (*>), bind, discard)
 
@@ -76,7 +75,7 @@ view state =
     ! style do
         height $ px $ toNumber state.height
         width $ px $ toNumber state.width
-    $ mempty
+    $ empty
 
 foldp
   :: ∀ fx

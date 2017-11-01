@@ -12,7 +12,8 @@
     "output"
   ],
   "dependencies": {
-    "purescript-pux": "^10.0.0",
+    "purescript-pux": "^11.0.0",
+    "purescript-smolder": "^10.2.0",
     "purescript-echarts": "^5.0.0"
   },
   "devDependencies": {
